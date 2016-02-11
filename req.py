@@ -165,7 +165,7 @@ for user in reqs["items"]:
 							bot.messages.send(chat_id=main_chat_id,message="[Заявка принята]")
 							break
 						if re.match("\[[Nn]\]",message["body"]): # То же самое, только отклонить
-							waшкаs=True
+							was=True
 							bot.storage.set(key='lid',value=message['id'])
 							if  re.search(" -[bB]",message["body"]): # Ключ для [n], чтобы забанить ([n] -b)
 								if  re.search(" -[bB] \".+\"",message["body"]): # [n] -b "Сюда можно влепить причину бана"
