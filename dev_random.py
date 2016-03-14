@@ -51,7 +51,7 @@ def main():
 			while counting<count_c:
 				r.append(bot.wall.get(owner_id=-GROUP_ID,filter="suggests",verify=False,count=100,offset=100*count_c)["items"])
 				counting+=1
-			suggested=r[randint(0,len(r))]
+			suggested=r[0][randint(0,len(r))]
 		else:
 			suggested=suggested["items"][randint(0,len(suggested["items"])-1)] #Соответственно тут получаем случайную
 		if "attachments" in suggested: #Проверка на картинку, там у ВК их аж два, обычная и загруженная + гифку добавил на всякий случай
