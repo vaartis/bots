@@ -5,5 +5,6 @@
 Внешние зависимости - модуль vk
 
 * comments - упоминания на табунчике
+* comments.rs - упоминания на табуне на Rust ([libtabun.rs](https://github.com/TyanNN/libtabun.rs))
 
 Этому нужен tabun_api
