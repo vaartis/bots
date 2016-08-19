@@ -29,10 +29,7 @@ fn check(user: &mut TClient, comms: HashMap<i64,Comment>) {
                         let mut new_content = ignore_lst.clone();
                         let _ = new_content.remove(x);
                         let mut f = fs::File::create("ignore.lst").unwrap();
-                        let _ = f.write_all(new_content.iter().fold(String::new(),|mut acc,x| {
-                            acc.push_str(&format!("{}\n",&x)); acc.to_owned() 
-                        }).trim().as_bytes());
-
+                        let _ = new_content.iter().map(|&x| writeln!(&mut f,"{}", x));
                         let _ = f.sync_data();
                         let _ = user.comment(comm.post_id, "Игнорирование выключено", comm.id, CommentType::Post);
                     }
@@ -80,29 +77,30 @@ fn check(user: &mut TClient, comms: HashMap<i64,Comment>) {
                     acc
                 });
 
-                	let body = format!("Вас упомянул в посте <a href='{}'>'{}'</a> пользователь <ls user='{}' /> \n <a href='{}'>Ссылка</a> на комментарий",
-                                       format!("{}/blog/{}.html", HOST_URL, comm.post_id),
-                                       user.get_post("",comm.post_id).unwrap().title,
-                                       comm.author,
-                                       format!("{}/blog/{}.html#comment{}",HOST_URL, comm.post_id, comm.id));
-                    if names.len() >= 1 {
-                        let tid = user.add_talk(&names.iter().map(|x| x.as_str()).collect(), "Упоминание", &body).unwrap();
-                        let _ = user.delete_talk(tid);
-                    }
-                    let cbody = if names.len() > 1 {
-                        let mut c = format!("Сообщение об упоминании отправлено пользователям: {}",
-                                names.iter().fold(String::new(),|mut acc, x| { acc.push_str(&format!("<ls user='{}'>, ",x)); acc }));
-                        c.pop(); c.pop();
-                        c
-                    } else if names.len() == 1 {
-                        format!("Сообщение об упоминании отправлено пользователю <ls user='{}'>",names[0])
-                    } else {
-                        String::new()
-                    };
+                let body = format!("Вас упомянул в посте <a href='{post_url}'>'{post_name}'\
+                                       </a> пользователь <ls user='{user}' /> \n <a href='{comm_url}'>Ссылка</a> на комментарий",
+                                       post_url     = format!("{}/blog/{}.html", HOST_URL, comm.post_id),
+                                       post_name    = user.get_post("",comm.post_id).unwrap().title,
+                                       user         = comm.author,
+                                       comm_url     = format!("{}/blog/{}.html#comment{}",HOST_URL, comm.post_id, comm.id));
+                if names.len() >= 1 {
+                    let tid = user.add_talk(&names.iter().map(|x| x.as_str()).collect(), "Упоминание", &body).unwrap();
+                    let _ = user.delete_talk(tid);
+                }
+                let cbody = if names.len() > 1 {
+                    let mut c = format!("Сообщение об упоминании отправлено пользователям: {}",
+                                        names.iter().fold(String::new(),|mut acc, x| { acc.push_str(&format!("<ls user='{}'>, ",x)); acc }));
+                    c.pop(); c.pop();
+                    c
+                } else if names.len() == 1 {
+                    format!("Сообщение об упоминании отправлено пользователю <ls user='{}'>",names[0])
+                } else {
+                    String::new()
+                };
 
-                    if !cbody.is_empty() {
-                        let _ = user.comment(comm.post_id, &cbody, comm.id, CommentType::Post);
-                    }
+                if !cbody.is_empty() {
+                    let _ = user.comment(comm.post_id, &cbody, comm.id, CommentType::Post);
+                }
             }
         }
     }
