@@ -56,10 +56,10 @@ fn check(user: &mut TClient, comms: HashMap<i64,Comment>) {
                 let mut names = name_regex.captures_iter(&body).map(|x| x.name("name").unwrap()).take(10).collect::<Vec<_>>();
                 names.sort();
                 names.dedup();
-                if names.iter().any(|x| **x == "lunabot".to_owned() 
-                                    || **x == "autopilot".to_owned() 
-                                    || **x == "er16".to_owned() 
-                                    || **x == "am31".to_owned()) { continue }
+                if names.iter().any(|x| match *x {
+                                        "lunabot" | "autopilot" | "er16" | "am31" => true,
+                                        _ => false
+                                    }) { continue }
 
                 let mut f = fs::OpenOptions::new()
                     .read(true)
@@ -84,7 +84,7 @@ fn check(user: &mut TClient, comms: HashMap<i64,Comment>) {
                                        user         = comm.author,
                                        comm_url     = format!("{}/blog/{}.html#comment{}",HOST_URL, comm.post_id, comm.id));
                 if names.len() >= 1 {
-                    let tid = user.add_talk(&names.iter().map(|x| x.as_str()).collect(), "Упоминание", &body).unwrap();
+                    let tid = user.add_talk(&names.iter().map(|x| x.as_str()).collect::<Vec<_>>(), "Упоминание", &body).unwrap();
                     let _ = user.delete_talk(tid);
                 }
                 let cbody = if names.len() > 1 {
