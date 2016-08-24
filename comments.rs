@@ -53,10 +53,6 @@ fn check(user: &mut TClient, comms: HashMap<i64,Comment>) {
             let mut names = name_regex.captures_iter(&body).map(|x| x.name("name").unwrap()).take(10).collect::<Vec<_>>();
             names.sort();
             names.dedup();
-            if names.iter().any(|x| match *x {
-                "lunabot" | "autopilot" | "er16" | "am31" => true,
-                    _ => false
-            }) { continue }
 
             let mut f = fs::OpenOptions::new()
                 .read(true)
@@ -80,29 +76,30 @@ fn check(user: &mut TClient, comms: HashMap<i64,Comment>) {
                                        user         = comm.author,
                                        comm_url     = format!("{}/blog/{}.html#comment{}",HOST_URL, comm.post_id, comm.id));
             if names.len() >= 1 {
-                let tid = user.add_talk(&names.iter().map(|x| x.as_str()).collect::<Vec<_>>(), "Упоминание", &body).unwrap();
-                let _ = user.delete_talk(tid);
-            }
-            let cbody = if names.len() > 1 {
-                let mut c = format!("Сообщение об упоминании отправлено пользователям: {}",
-                                    names.iter().fold(String::new(),|mut acc, x| { acc.push_str(&format!("<ls user='{}'>, ",x)); acc }));
-                c.pop(); c.pop();
-                c
-            } else if names.len() == 1 {
-                format!("Сообщение об упоминании отправлено пользователю <ls user='{}'>",names[0])
-            } else {
-                String::new()
-            };
+                let tid = user.add_talk(&names.iter().map(|x| x.as_str()).collect::<Vec<_>>(), "Упоминание", &body);
+                if let Ok(x) = tid {
+                    let _ = user.delete_talk(x);
+                    let cbody = if names.len() > 1 {
+                        let mut c = format!("Сообщение об упоминании отправлено пользователям: {}",
+                                            names.iter().fold(String::new(),|mut acc, x| { acc.push_str(&format!("<ls user='{}'>, ",x)); acc }));
+                        c.pop(); c.pop();
+                        c
+                    } else if names.len() == 1 {
+                        format!("Сообщение об упоминании отправлено пользователю <ls user='{}'>",names[0])
+                    } else {
+                        String::new()
+                    };
 
-            if !cbody.is_empty() {
-                let _ = user.comment(comm.post_id, &cbody, comm.id, CommentType::Post);
+                    if !cbody.is_empty() {
+                        let _ = user.comment(comm.post_id, &cbody, comm.id, CommentType::Post);
+                    }
+                }
             }
         }
     }
 }
 
-pub fn dothing() {
-    let mut user = TClient::new("", "").unwrap();
+pub fn dothing(mut user: &mut TClient) {
     loop {
         let comms = user.get_comments("").unwrap();
         check(&mut user, comms);
