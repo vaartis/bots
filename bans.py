@@ -88,12 +88,14 @@ for i in range(th_count):
                         cm = "{base} ({name})".format(base=COMMENT,name=group["name"] if "name" in group else COMMENT)
                         api.groups.banUser(group_id=GID, user_id=member_id, comment=cm, comment_visible=1)
                         print(member_id)
+                        sleep(0.3)
                 elif isinstance(cancer, str):
                     try:
                         if re.match(cancer, group["name"], re.IGNORECASE):
                             cm = "{base} ({name})".format(base=COMMENT,name=group["name"])
                             api.groups.banUser(group_id=GID, user_id=member_id, comment=cm, comment_visible=1)
                             print(member_id)
+                            sleep(0.3)
                     except KeyError:
                         pass
 
