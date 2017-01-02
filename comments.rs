@@ -50,7 +50,7 @@ fn check(user: &mut TClient, comms: HashMap<i64,Comment>) {
             body = pre_regex.replace_all(&body, "");
         }
         if name_regex.is_match(&body) && !was_answered {
-            let mut names = name_regex.captures_iter(&body).map(|x| x.name("name").unwrap()).take(10).collect::<Vec<_>>();
+            let mut names = name_regex.captures_iter(&body).map(|x| x.name("name").unwrap().to_lowercase()).take(10).collect::<Vec<_>>();
             names.sort();
             names.dedup();
 
@@ -62,7 +62,7 @@ fn check(user: &mut TClient, comms: HashMap<i64,Comment>) {
             let _ = f.read_to_string(&mut content);
             let ignored_names = content.split('\n').collect::<Vec<_>>();
 
-            let names = names.iter().fold(Vec::new(),|mut acc,&x| {
+            let names = names.iter().fold(Vec::new(),|mut acc,x| {
                 if let Ok(x) = user.get_profile(x) {
                     if !ignored_names.iter().any(|y| *y == x.username) { acc.push(x.username) }
                 }
