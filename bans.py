@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 # Copyright (C) 2016 TyanNN <TyanNN@cocaine.ninja>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -83,13 +85,13 @@ for i in range(th_count):
             for cancer in cancer_pubs:
                 if isinstance(cancer, int):
                     if group["id"] == cancer:
-                        cm = (COMMENT + " (" + group["name"] + ")") if "name" in group else COMMENT
+                        cm = "{base} ({name})".format(base=COMMENT,name=group["name"] if "name" in group else COMMENT)
                         api.groups.banUser(group_id=GID, user_id=member_id, comment=cm, comment_visible=1)
                         print(member_id)
                 elif isinstance(cancer, str):
                     try:
                         if re.match(cancer, group["name"], re.IGNORECASE):
-                            cm = COMMENT + " (" + group["name"] + ")"
+                            cm = "{base} ({name})".format(base=COMMENT,name=group["name"])
                             api.groups.banUser(group_id=GID, user_id=member_id, comment=cm, comment_visible=1)
                             print(member_id)
                     except KeyError:
