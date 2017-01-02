@@ -1,5 +1,5 @@
 
-* dev_random - бот, сортирующий предложку в [/dev/random](https://vk.com/realrandomitt)
+* dev_random - бот, сортирующий предложку в [/dev/random](https://vk.com/realrandomitt) ([Переписано на Rust](https://github.com/TyanNN/dev_random))
 * req - бот, сортирующий заявки в закрытую группу по подпискам, раньше трудился [тут](https://vk.com/artchatmusic)
 * bans - банилка пользователей из списка или по пабликам
 

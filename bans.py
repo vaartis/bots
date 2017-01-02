@@ -42,6 +42,7 @@ if "file" in sys.argv:
     for u in lst:
         api.groups.banUser(group_id=GID, user_id=int(u), comment=COMMENT, comment_visible=1)
         c += 1
+        sleep(0.3)
         with open(p, 'w') as f:
             f.writelines(lst[c:])
 
