@@ -59,6 +59,11 @@ cancer_pubs = [
     r"\d+ch(an)*" # Все цифрочаны
     ]
 
+# Игнорируемые пользователи(id)
+ignore = [
+
+    ]
+
 def check_cancer(user_subs_list):
     for group in user_subs_list:
         for cancer in cancer_pubs:
@@ -84,6 +89,7 @@ for i in range(th_count):
     member_ids = api.groups.getMembers(group_id=GID, offset=current_offset)["users"]
 
     for member_id in member_ids:
+        if member_id in ignore: continue
         try:
             user_subs = api.users.getSubscriptions(user_id=member_id, extended=1, count=200)
             user_subs_list = user_subs["items"]
