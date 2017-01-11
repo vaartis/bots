@@ -59,6 +59,27 @@ cancer_pubs = [
     r"\d+ch(an)*" # Все цифрочаны
     ]
 
+def check_cancer(user_subs_list):
+    for group in user_subs_list:
+        for cancer in cancer_pubs:
+            if isinstance(cancer, int):
+                if group["id"] == cancer:
+                    cm = "{base} ({name})".format(base=COMMENT,name=group["name"] if "name" in group else COMMENT)
+                    api.groups.banUser(group_id=GID, user_id=member_id, comment=cm, comment_visible=1)
+                    print(member_id)
+                    sleep(0.3)
+                    return
+            elif isinstance(cancer, str):
+                try:
+                    if re.match(cancer, group["name"], re.IGNORECASE):
+                        cm = "{base} ({name})".format(base=COMMENT,name=group["name"])
+                        api.groups.banUser(group_id=GID, user_id=member_id, comment=cm, comment_visible=1)
+                        print(member_id)
+                        sleep(0.3)
+                        return
+                except KeyError:
+                    pass
+
 for i in range(th_count):
     member_ids = api.groups.getMembers(group_id=GID, offset=current_offset)["users"]
 
@@ -80,24 +101,9 @@ for i in range(th_count):
         except vk.exceptions.VkAPIError as e:
             if e.code == 18:
                 api.groups.removeUser(group_id=GID, user_id=member_id) # Пинок мёртвых акков
+                continue
 
-        for group in user_subs_list:
-            for cancer in cancer_pubs:
-                if isinstance(cancer, int):
-                    if group["id"] == cancer:
-                        cm = "{base} ({name})".format(base=COMMENT,name=group["name"] if "name" in group else COMMENT)
-                        api.groups.banUser(group_id=GID, user_id=member_id, comment=cm, comment_visible=1)
-                        print(member_id)
-                        sleep(0.3)
-                elif isinstance(cancer, str):
-                    try:
-                        if re.match(cancer, group["name"], re.IGNORECASE):
-                            cm = "{base} ({name})".format(base=COMMENT,name=group["name"])
-                            api.groups.banUser(group_id=GID, user_id=member_id, comment=cm, comment_visible=1)
-                            print(member_id)
-                            sleep(0.3)
-                    except KeyError:
-                        pass
+        check_cancer(user_subs_list)
 
     current_offset += 1
     sleep(0.3)
